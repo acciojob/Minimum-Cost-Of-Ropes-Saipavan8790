@@ -1,36 +1,116 @@
 function calculateMinCost() {
-  //your code here
-  
-    // Step 1: Get the input value from the text element
-  const inputElement = document.getElementById('rope-lengths'); // Replace 'inputText' with the actual ID of your input element
-  const inputValue = inputElement.value;
+  const input = document.getElementById("rope-lengths");
+	const answer = minCostToConnectRopes(input.value.split(",").map(e=>parseInt(e)))
+	console.log(answer)
+	document.getElementById("result").textContent = answer;
+}  
 
-  // Step 2: Split the input into an array of integers
-  const inputArray = inputValue.split(',');
+function minCostToConnectRopes(ropes) {
+	console.log(ropes)
+  // Create a min heap to store the rope lengths
+  const minHeap = new MinHeap();
 
-  // Step 3: Convert the array elements to integers
-  const ropeLengths = inputArray.map(str => parseInt(str.trim(), 10));
-
-  // Step 4: Implement the rope connecting logic to calculate the minimum cost
-  // You can use the same logic as explained earlier in the "Minimum Cost of Ropes" problem.
-
-  let totalCost = 0;
-  while (ropeLengths.length > 1) {
-    // Find the two shortest ropes
-    ropeLengths.sort((a, b) => a - b);
-    const shortest1 = ropeLengths.shift();
-    const shortest2 = ropeLengths.shift();
-    
-    // Connect the two shortest ropes and add the cost
-    const newRope = shortest1 + shortest2;
-    totalCost += newRope;
-    
-    // Add the newly created rope back to the array
-    ropeLengths.push(newRope);
+  // Insert all the rope lengths into the min heap
+  for (const rope of ropes) {
+    minHeap.insert(rope);
   }
 
-  // Step 5: Return the minimum cost before that extract div 
-	 const res =document.getElementById('result');
-         res.innerText=totalCost;
-  
-}  
+  let totalCost = 0;
+
+  // Combine ropes until there's only one left in the heap
+  while (minHeap.size() > 1) {
+    // Extract the two shortest ropes
+    const rope1 = minHeap.extractMin();
+    const rope2 = minHeap.extractMin();
+
+    // Calculate the cost of combining the two ropes
+    const cost = rope1 + rope2;
+
+    // Add the cost to the total cost
+    totalCost += cost;
+
+    // Insert the combined rope length back into the min heap
+    minHeap.insert(cost);
+  }
+
+  return totalCost;
+}
+
+// Implementation of a MinHeap data structure
+class MinHeap {
+  constructor() {
+    this.heap = [];
+  }
+
+  insert(value) {
+    this.heap.push(value);
+    this.heapifyUp();
+  }
+
+  extractMin() {
+    if (this.size() === 0) {
+      return null;
+    }
+
+    if (this.size() === 1) {
+      return this.heap.pop();
+    }
+
+    const min = this.heap[0];
+    this.heap[0] = this.heap.pop();
+    this.heapifyDown();
+    return min;
+  }
+
+  size() {
+    return this.heap.length;
+  }
+
+  heapifyUp() {
+    let index = this.size() - 1;
+    while (index > 0) {
+      const parentIndex = Math.floor((index - 1) / 2);
+      if (this.heap[parentIndex] <= this.heap[index]) {
+        break;
+      }
+      this.swap(parentIndex, index);
+      index = parentIndex;
+    }
+  }
+
+  heapifyDown() {
+    let index = 0;
+    while (true) {
+      const leftChildIndex = 2 * index + 1;
+      const rightChildIndex = 2 * index + 2;
+      let smallestChildIndex = index;
+
+      if (
+        leftChildIndex < this.size() &&
+        this.heap[leftChildIndex] < this.heap[smallestChildIndex]
+      ) {
+        smallestChildIndex = leftChildIndex;
+      }
+
+      if (
+        rightChildIndex < this.size() &&
+        this.heap[rightChildIndex] < this.heap[smallestChildIndex]
+      ) {
+        smallestChildIndex = rightChildIndex;
+      }
+
+      if (smallestChildIndex === index) {
+        break;
+      }
+
+      this.swap(index, smallestChildIndex);
+      index = smallestChildIndex;
+    }
+  }
+
+  swap(i, j) {
+    const temp = this.heap[i];
+    this.heap[i] = this.heap[j];
+    this.heap[j] = temp;
+  }
+}
