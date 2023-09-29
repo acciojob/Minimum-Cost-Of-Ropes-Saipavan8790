@@ -1,25 +1,36 @@
 function calculateMinCost() {
   //your code here
-  // read data from input element;
-	var inputData = document.querySelector("#rope-lengths").value;
-	var inputArr = inputData.split(",");
+  
+    // Step 1: Get the input value from the text element
+  const inputElement = document.getElementById('rope-lengths'); // Replace 'inputText' with the actual ID of your input element
+  const inputValue = inputElement.value;
 
-	for(var i = 0; i< inputArr.length; i++) {
-		inputArr[i] = Number(inputArr[i]);
-	}
-	var cost = 0;
-	inputArr.sort(function (a,b) { return a-b;});
+  // Step 2: Split the input into an array of integers
+  const inputArray = inputValue.split(',');
 
-	while(inputArr.length > 1) {
-		var newRope = inputArr[0] + inputArr[1];
-		cost += newRope;
+  // Step 3: Convert the array elements to integers
+  const ropeLengths = inputArray.map(str => parseInt(str.trim(), 10));
 
-		// delete first two element
-		inputArr.splice(0,2);
-		inputArr.push(newRope);
-		//alert(newRope);
-		inputArr.sort(function(a,b) { return a-b});
-	}	
-  document.querySelector("#result").textContent = cost;
+  // Step 4: Implement the rope connecting logic to calculate the minimum cost
+  // You can use the same logic as explained earlier in the "Minimum Cost of Ropes" problem.
 
+  let totalCost = 0;
+  while (ropeLengths.length > 1) {
+    // Find the two shortest ropes
+    ropeLengths.sort((a, b) => a - b);
+    const shortest1 = ropeLengths.shift();
+    const shortest2 = ropeLengths.shift();
+    
+    // Connect the two shortest ropes and add the cost
+    const newRope = shortest1 + shortest2;
+    totalCost += newRope;
+    
+    // Add the newly created rope back to the array
+    ropeLengths.push(newRope);
+  }
+
+  // Step 5: Return the minimum cost before that extract div 
+	 const res =document.getElementById('result');
+         res.innerText=totalCost;
+  
 }  
