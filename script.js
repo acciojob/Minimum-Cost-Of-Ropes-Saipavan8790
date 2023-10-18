@@ -1,46 +1,34 @@
+function calculateMinCost() {
+  const ropeLengthsInput = document.getElementById('rope-lengths');
+  const resultDiv = document.getElementById('result');
 
-  //your code here
-   function calculateMinimumCost() {
-            const ropesInput = document.getElementById("ropesInput").value;
-            const ropeLengths = ropesInput.split(",").map(Number);
+  const ropeLengths = ropeLengthsInput.value.split(',').map(Number);
 
-            const minCost = findMinimumCost(ropeLengths);
-            
-            const resultDiv = document.getElementById("result");
-            resultDiv.textContent = "Minimum cost: " + minCost;
-        }
+  if (ropeLengths.length < 2) {
+    resultDiv.textContent = "Please enter at least two rope lengths.";
+    return;
+}  
+function findMinCostRopes(arr) {
+    let minCost = 0;
+    let minHeap = [];
 
-        function findMinimumCost(ropes) {
-            // Using a min heap (priority queue) to keep track of the minimum lengths
-            const PriorityQueue = require("priorityqueuejs");
-            const pq = new PriorityQueue(function(a, b) {
-                return a - b;
-            });
+    // Convert array to a min heap
+    for (let i = 0; i < arr.length; i++) {
+      minHeap.push(arr[i]);
+      minHeap.sort((a, b) => a - b);
+    }
 
-            // Adding rope lengths to the priority queue
-            ropes.forEach(length => {
-                pq.enq(length);
-            });
+    while (minHeap.length > 1) {
+      const first = minHeap.shift();
+      const second = minHeap.shift();
+      const cost = first + second;
+      minCost += cost;
+      minHeap.push(cost);
+      minHeap.sort((a, b) => a - b);
+    }
 
-            let totalCost = 0;
+    resultDiv.textContent = `Minimum Cost of Ropes: ${minCost}`;
+  }
 
-            // Combine ropes until only one rope remains in the queue
-            while (pq.size() > 1) {
-                const firstRope = pq.deq();
-                const secondRope = pq.deq();
-
-                const combinedCost = firstRope + secondRope;
-                totalCost += combinedCost;
-
-                pq.enq(combinedCost);
-            }
-
-            return totalCost;
-        }
-
-
-
-
-
-  
-  
+  findMinCostRopes(ropeLengths);
+}
